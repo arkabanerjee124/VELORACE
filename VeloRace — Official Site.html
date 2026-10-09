@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VeloRace — Drift. Race. Win.</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --asphalt:#0d0f14; --panel:#161a24; --kerb:#ff6b35; --ink:#eef1f6;
+  --dim:#8891a3; --cyan:#3ee6d8; --line:rgba(255,255,255,.08);
+}
+*{box-sizing:border-box;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+body{margin:0;background:var(--asphalt);color:var(--ink);font-family:'Oswald',sans-serif;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);}
+img,canvas{max-width:100%;}
+.wrap{max-width:1040px;margin:0 auto;padding:0 24px;}
+
+nav{position:sticky;top:0;z-index:10;background:rgba(13,15,20,.85);backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--line);}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;}
+.logo{font-weight:700;font-size:19px;letter-spacing:.02em;}
+.logo span{color:var(--kerb);}
+.navlinks{display:flex;gap:28px;font-size:14px;color:var(--dim);}
+.navlinks a{color:var(--dim);text-decoration:none;}
+.navlinks a:hover{color:var(--ink);}
+
+.hero{padding:88px 0 70px;position:relative;overflow:hidden;}
+.hero::after{content:"";position:absolute;right:-120px;top:-80px;width:460px;height:460px;
+  background:radial-gradient(circle, rgba(255,107,53,.18), transparent 70%);pointer-events:none;}
+.eyebrow{color:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:13px;margin-bottom:14px;}
+h1{font-size:clamp(40px,6.5vw,68px);line-height:1.02;margin:0 0 20px;max-width:680px;}
+h1 em{font-style:normal;color:var(--kerb);}
+.sub{color:var(--dim);font-size:18px;max-width:480px;line-height:1.6;margin-bottom:34px;}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap;}
+.btn{font-family:'Oswald',sans-serif;font-weight:700;font-size:16px;letter-spacing:.02em;
+  padding:15px 30px;border-radius:3px;text-decoration:none;display:inline-block;
+  transition:transform .12s ease;border:1px solid transparent;}
+.btn:hover{transform:translateY(-2px);}
+.btn-primary{background:var(--kerb);color:#1a0d06;}
+.btn-ghost{border-color:var(--line);color:var(--ink);}
+
+.strip{display:flex;gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.strip .wrap{display:grid;grid-template-columns:repeat(3,1fr);width:100%;padding:0;}
+.stat{padding:26px 24px;border-right:1px solid var(--line);}
+.stat:last-child{border-right:none;}
+.stat b{display:block;font-family:'JetBrains Mono',monospace;font-size:26px;color:var(--cyan);}
+.stat span{color:var(--dim);font-size:13px;}
+
+.section{padding:70px 0;}
+.section h2{font-size:clamp(26px,4vw,36px);margin:0 0 10px;max-width:560px;}
+.section p.lead{color:var(--dim);max-width:520px;margin:0 0 42px;line-height:1.6;}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;
+  background:var(--line);border:1px solid var(--line);}
+.card{background:var(--panel);padding:26px 22px;}
+.card .num{font-family:'JetBrains Mono',monospace;color:var(--kerb);font-size:13px;margin-bottom:10px;}
+.card h3{margin:0 0 8px;font-size:18px;}
+.card p{margin:0;color:var(--dim);font-size:14px;line-height:1.55;}
+
+.howto{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;}
+@media (max-width:760px){.howto{grid-template-columns:1fr;}}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s;}
+.steps li{counter-increment:s;padding:16px 0 16px 42px;position:relative;border-top:1px solid var(--line);}
+.steps li:first-child{border-top:none;}
+.steps li::before{content:counter(s);position:absolute;left:0;top:16px;width:26px;height:26px;
+  border:1px solid var(--kerb);color:var(--kerb);border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;}
+.steps b{display:block;margin-bottom:3px;}
+.steps span{color:var(--dim);font-size:14px;}
+.keycap{border:1px solid var(--line);border-radius:4px;padding:16px;font-family:'JetBrains Mono',monospace;
+  font-size:13px;color:var(--dim);background:var(--panel);}
+.keycap b{color:var(--ink);display:block;margin-bottom:10px;font-family:'Oswald',sans-serif;}
+
+.road{padding:60px 0;border-top:1px solid var(--line);}
+.road ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px;}
+.road li{display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line);
+  font-size:15px;}
+.road li .tag{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--cyan);
+  border:1px solid rgba(62,230,216,.35);border-radius:3px;padding:3px 8px;}
+
+footer{border-top:1px solid var(--line);padding:30px 0;color:var(--dim);font-size:13px;
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+footer a{color:var(--dim);}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="logo">VELO<span>RACE</span></div>
+    <div class="navlinks">
+      <a href="#features">Features</a>
+      <a href="#howto">How to play</a>
+      <a href="#roadmap">Roadmap</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">FREE ARCADE RACER — PLAY IN BROWSER</div>
+    <h1>Drift every corner.<br>Beat <em>three</em> rivals.<br>Own the podium.</h1>
+    <p class="sub">VeloRace is a fast, physics-driven top-down racer. No install, no login — three laps against AI rivals who fight for every line.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://claude.ai/artifact/UcP3uG22iXi5tFjrZTGPNB" target="_blank" rel="noopener">▶ Play Now — Free</a>
+      <a class="btn btn-ghost" href="#howto">How it works</a>
+    </div>
+  </div>
+</header>
+
+<div class="strip">
+  <div class="wrap">
+    <div class="stat"><b>3</b><span>laps per race</span></div>
+    <div class="stat"><b>3</b><span>AI rivals, unique skill</span></div>
+    <div class="stat"><b>0:00</b><span>install time — runs in browser</span></div>
+  </div>
+</div>
+
+<section class="section" id="features">
+  <div class="wrap">
+    <h2>Built for the corner, not the straightaway</h2>
+    <p class="lead">Every system is tuned around one feeling: the moment you hold a drift through an apex and come out faster than the car next to you.</p>
+    <div class="grid">
+      <div class="card"><div class="num">01</div><h3>Drift physics</h3><p>Momentum, friction, and traction loss that rewards smooth inputs over button mashing.</p></div>
+      <div class="card"><div class="num">02</div><h3>Rival AI</h3><p>Three CPU racers each run a different skill rating — some brake late, some never let you through.</p></div>
+      <div class="card"><div class="num">03</div><h3>Live standings</h3><p>A position tracker updates every frame so you always know exactly who you need to catch.</p></div>
+      <div class="card"><div class="num">04</div><h3>Touch-ready</h3><p>On-screen controls appear automatically on phones and tablets — same game, no separate build.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="howto">
+  <div class="wrap howto">
+    <div>
+      <h2>Three laps. One line. Go.</h2>
+      <ul class="steps">
+        <li><b>Hit the gas</b><span>Hold accelerate through the opening straight to build a gap before the first corner.</span></li>
+        <li><b>Carry the drift</b><span>Steer into corners at speed — easing off gas mid-turn keeps the car planted.</span></li>
+        <li><b>Track your rivals</b><span>Watch the standings panel; a CPU closing fast usually means a late-brake pass is coming.</span></li>
+        <li><b>Cross three times</b><span>The checkered line on lap three ends the race and drops you on the podium screen.</span></li>
+      </ul>
+    </div>
+    <div class="keycap">
+      <b>CONTROLS</b>
+      ↑ / W — Accelerate<br>
+      ↓ / S — Brake<br>
+      ← → / A D — Steer<br><br>
+      <span style="color:var(--dim)">Touch: on-screen pedals and arrows appear automatically on mobile.</span>
+    </div>
+  </div>
+</section>
+
+<section class="road" id="roadmap">
+  <div class="wrap">
+    <h2>What's next</h2>
+    <ul>
+      <li><span>New circuits — coast, city, and night tracks</span><span class="tag">IN PROGRESS</span></li>
+      <li><span>Unlockable cars with handling differences</span><span class="tag">PLANNED</span></li>
+      <li><span>Online leaderboards</span><span class="tag">PLANNED</span></li>
+      <li><span>Android app on Google Play</span><span class="tag">PLANNED</span></li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap" style="display:flex;justify-content:space-between;width:100%;flex-wrap:wrap;gap:10px;">
+    <span>VeloRace — an independent arcade racing project.</span>
+    <a href="https://claude.ai/artifact/UcP3uG22iXi5tFjrZTGPNB" target="_blank" rel="noopener">Play the game →</a>
+  </div>
+</footer>
+
+</body>
+</html>
